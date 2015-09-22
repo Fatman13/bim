@@ -6,7 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 	<!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
-	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">	
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
 	<style>
 		body {
 			font-family: Monospace;
@@ -24,6 +26,29 @@
 		.center-wrapper{
   		text-align: center;
 		}
+		.wrap-text {
+    	white-space: normal !important;
+		}
+		.list-view-scroll {    
+      overflow: auto;   
+      -webkit-overflow-scrolling: touch; 
+      /*-webkit-overflow-scrolling: ; */
+    }
+    .ui-panel.ui-panel-open {
+        position:fixed;
+    }
+    .ui-panel-inner {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        right: 0;
+        bottom: 0px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (min-width:35em) {
+    }
 	</style>
 </head>
 
@@ -36,39 +61,76 @@
 		</div>
 	</div> -->
 
-	<div data-role="page">
+	<div id="main-page" data-role="page">
 
-	  <div data-role="panel" data-display="overlay" id="model_details">
-    	<!-- panel content goes here -->
-    	设备名称：VAV-24f-A201-0013
-    	设备编号：12039884777723312
-    	设备CAD图纸编号：AFJ-02938-K983-KK
-    	设备最大功率：1500 w
-    	设备最大排风量：1000 m^2 / h
-    	设备额定功率：1w w
-    	设备供应商名称：昆明正大立方科技有限公司
-    	设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室
-    	设备供应商电话：021-65873345
+
+	  <div data-role="panel" data-display="overlay" id="model_details_panel">
+    	<ul data-role="listview" class="list-view-scroll">
+	    	<li class="wrap-text">设备名称：VAV-24f-A201-0013</li>
+	    	<li class="wrap-text">设备编号：12039884777723312</li>
+	    	<li class="wrap-text">设备CAD图纸编号：AFJ-02938-K983-KK</li>
+	    	<li class="wrap-text">设备最大功率：1500 w</li>
+	    	<li class="wrap-text">设备最大排风量：1000 m^2 / h</li>
+	    	<li class="wrap-text">设备额定功率：1w w</li>
+	    	<li class="wrap-text">设备供应商名称：昆明正大立方科技有限公司</li>
+	    	<li class="wrap-text">设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+    	</ul>
     </div><!-- /panel -->
 
-		<div data-role="header">
-			<h1><a href="http://threejs.org" target="_blank">three.js</a> - 模型展示</h1>
-		</div><!-- /header -->
+		<!-- <div data-role="header">
+			<h1>模型展示 <a href="http://threejs.org" target="_blank">three.js</a></h1>
+		</div> --><!-- /header -->
 
-		<div role="main" class="ui-content">
+		<div data-role="popup" id="model_details_popup">
+			<!-- <form class="ui-filterable" style="z-index: 1">
+				<input id="model_details_popup_input" data-type="search">
+ 			</form> -->
+		  <!-- <ul data-role="listview"> -->
+		  <!-- <ul data-role="listview" data-filter="true" data-filter-placeholder="查询..." data-input="#model_details_popup_input"> -->
+		  <!-- <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a> -->
+		  <ul data-role="listview" class="list-view-scroll">
+	    	<li class="wrap-text">设备名称：VAV-24f-A201-0013</li>
+	    	<li class="wrap-text">设备编号：12039884777723312</li>
+	    	<li class="wrap-text">设备CAD图纸编号：AFJ-02938-K983-KK</li>
+	    	<li class="wrap-text">设备最大功率：1500 w</li>
+	    	<li class="wrap-text">设备最大排风量：1000 m^2 / h</li>
+	    	<li class="wrap-text">设备额定功率：1w w</li>
+	    	<li class="wrap-text">设备供应商名称：昆明正大立方科技有限公司</li>
+	    	<li class="wrap-text">设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+    	</ul>
+		</div>
+
+		<div role="main" class="ui-content" data-position="fixed">
+
 		</div><!-- /content -->
 
-		<div class="center-wrapper" data-role="footer" data-position="fixed">
+		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
 		  <!-- <p>嗯？</p> -->
-   		<a href="#model_details" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn">No text</a>
+   		<a href="#model_details_popup" id="model_details_popup_btn" data-rel="popup" data-transition="slideup" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn">No text</a>
+   		<a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all center-btn">No text</a>
 		</div><!-- /footer -->
 	</div><!-- /page -->
 
 	<script src="js/three.min.js"></script>
 	<script src="js/TrackballControls.js"></script>		
 	<script src="js/OBJLoader.js"></script>
-	<script src="js/jquery-1.11.3.min.js"></script>
-	<script src="js/jquery.mobile-1.4.5.min.js"></script>
 
 	<script>
 
@@ -104,6 +166,14 @@
 			controls.noPan = false;
 			controls.staticMoving = true;
 			controls.dynamicDampingFactor = 0.3;
+
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
 
 			// scene
 
@@ -177,8 +247,8 @@
 
 			var loader = new THREE.OBJLoader( manager );
 			// loader.load( 'http://threejs.org/examples/obj/male02/male02.obj', function ( object ) {
-			loader.load( 'iPhone_6_obj.obj', function ( object ) {
-			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			// loader.load( 'iPhone_6_obj.obj', function ( object ) {
+			loader.load( 'Jack_Skellington.obj', function ( object ) {
 			// loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
 			// loader.load( 'ship.obj', function ( object ) {
 				console.log(this);
@@ -225,6 +295,7 @@
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
+			// controls.enabled = false;
 		}
 
 		function makeTextSprite( message, parameters ) {
