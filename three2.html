@@ -3,7 +3,10 @@
 <head>
 	<title>BIM模型展示-测试工程</title>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+	<!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">	
 	<style>
 		body {
 			font-family: Monospace;
@@ -12,27 +15,60 @@
 			margin: 0px;
 			overflow: hidden;
 		}
-		#info {
-			color: #fff;
-			position: absolute;
-			top: 10px;
-			width: 100%;
-			text-align: center;
-			z-index: 100;
-			display:block;
+		.ui-content {
+			padding: 0em;
 		}
-		#info a, .button { color: #f00; font-weight: bold; text-decoration: underline; cursor: pointer }
+		.center-btn{
+			margin: 0, auto;
+		}
+		.center-wrapper{
+  		text-align: center;
+		}
 	</style>
 </head>
 
 <body>
-	<div id="info">
-		<a href="http://threejs.org" target="_blank">three.js</a> - 模型展示
-	</div>
+	<!-- <div class="container">
+		<div class="row">
+		  <div id="model_details" class="col-xs-6 col-md-4"></div>
+			<div class="col-xs-6 col-md-4"></div>
+			<div class="col-xs-6 col-md-4"></div>
+		</div>
+	</div> -->
 
-	<script src="three.min.js"></script>
-	<script src="TrackballControls.js"></script>		
-	<script src="OBJLoader.js"></script>
+	<div data-role="page">
+
+	  <div data-role="panel" data-display="overlay" id="model_details">
+    	<!-- panel content goes here -->
+    	设备名称：VAV-24f-A201-0013
+    	设备编号：12039884777723312
+    	设备CAD图纸编号：AFJ-02938-K983-KK
+    	设备最大功率：1500 w
+    	设备最大排风量：1000 m^2 / h
+    	设备额定功率：1w w
+    	设备供应商名称：昆明正大立方科技有限公司
+    	设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室
+    	设备供应商电话：021-65873345
+    </div><!-- /panel -->
+
+		<div data-role="header">
+			<h1><a href="http://threejs.org" target="_blank">three.js</a> - 模型展示</h1>
+		</div><!-- /header -->
+
+		<div role="main" class="ui-content">
+		</div><!-- /content -->
+
+		<div class="center-wrapper" data-role="footer" data-position="fixed">
+		  <!-- <p>嗯？</p> -->
+   		<a href="#model_details" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn">No text</a>
+		</div><!-- /footer -->
+	</div><!-- /page -->
+
+	<script src="js/three.min.js"></script>
+	<script src="js/TrackballControls.js"></script>		
+	<script src="js/OBJLoader.js"></script>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
 
 	<script>
 
@@ -54,7 +90,8 @@
 		function init() {
 
 			container = document.createElement( 'div' );
-			document.body.appendChild( container );
+			// document.body.appendChild( container );
+			$(".ui-content").append( container );
 
 			camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
 			camera.position.z = 500;
@@ -109,19 +146,40 @@
 
 			// } );
 
-    //   var spritey = makeTextSprite( " World! ", 
-				// { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-
-			var spritey = makeTextSprite( "设备名称：VAV-24f-A201-0013 \n设备编号：12039884777723312\n设备CAD图纸编号：AFJ-02938-K983-KK\n设备最大功率：1500 w\n设备最大排风量：1000 m^2 / h\n设备额定功率：1w w\n设备供应商名称：昆明正大立方科技有限公司\n设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室\n设备供应商电话：021-65873345", 
-			{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );      
+			// var spritey = makeTextSprite( "设备名称：VAV-24f-A201-0013 \n设备编号：12039884777723312\n设备CAD图纸编号：AFJ-02938-K983-KK\n设备最大功率：1500 w\n设备最大排风量：1000 m^2 / h\n设备额定功率：1w w\n设备供应商名称：昆明正大立方科技有限公司\n设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室\n设备供应商电话：021-65873345", 
+			// { fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );      
 
 			// model
+			var text2 = document.createElement('div');
+			text2.style.position = 'absolute';
+			//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+			// text2.style.width = 100;
+			// text2.style.height = 100;
+			// text2.style.backgroundColor = "blue";
+			// text2 = "abcd";
+			// text2.id = "abcd";
+			// text2.className = "abcd";
+			text2.className = "";
+			text2.style.backgroundColor = "rgba(255,100,100,0.25)";
+			text2.innerHTML = "设备名称：VAV-24f-A201-0013 \n设备编号：12039884777723312\n设备CAD图纸编号：AFJ-02938-K983-KK\n设备最大功率：1500 w\n设备最大排风量：1000 m^2 / h\n设备额定功率：1w w\n设备供应商名称：昆明正大立方科技有限公司\n设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室\n设备供应商电话：021-65873345";
+			text2.style.whiteSpace = "pre";
+			// text2.innerHTML = "hi there!";
+			text2.style.top = 200 + 'px';
+			text2.style.left = 200 + 'px';
+
+			// var text1 = document.createElement('div');
+			// // text1.innerHTML = text2;
+			// text1.className = "panel panel-default";
+			// text1.appendChild(text2);
+			// document.body.appendChild(text2);
+			// document.body.appendChild(text1);
+			// $("#model_details").append(text1);
 
 			var loader = new THREE.OBJLoader( manager );
 			// loader.load( 'http://threejs.org/examples/obj/male02/male02.obj', function ( object ) {
-			// loader.load( 'iPhone_6_obj.obj', function ( object ) {
+			loader.load( 'iPhone_6_obj.obj', function ( object ) {
 			// loader.load( 'Jack_Skellington.obj', function ( object ) {
-			loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
+			// loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
 			// loader.load( 'ship.obj', function ( object ) {
 				console.log(this);
 
@@ -138,8 +196,8 @@
 				// object.position.y = - 80;
 				bbox = new THREE.Box3().setFromObject(object);
 			  // spritey.position.set(100,0,0);
-			  spritey.position.set(bbox.max.x, bbox.max.y, bbox.max.z);
-				scene.add( spritey );
+			  // spritey.position.set(bbox.max.x, bbox.max.y, bbox.max.z);
+				// scene.add( spritey );
 
 				scene.add( object );
 
@@ -205,7 +263,8 @@
 				+ borderColor.b + "," + borderColor.a + ")";
 
 			context.lineWidth = borderThickness;
-			roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+			roundRect(context, borderThickness/2, borderThickness/2, 300, 300, 6);
+			// roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
 			// 1.4 is extra height factor for text below baseline: g,j,p,q.
 
 			// text color
