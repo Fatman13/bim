@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BIM模型展示-测试工程</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #ffffff;
+			color: #fff;
+			margin: 0px;
+			overflow: hidden;
+		}
+		.ui-content {
+			padding: 0em;
+		}
+		.center-btn{
+			margin: 0, auto;
+		}
+		.center-wrapper{
+  		text-align: center;
+		}
+		.wrap-text {
+    	white-space: normal !important;
+		}
+		.list-view-scroll {    
+      overflow: auto;   
+      -webkit-overflow-scrolling: touch; 
+      /*-webkit-overflow-scrolling: ; */
+    }
+    .ui-panel.ui-panel-open {
+        position:fixed;
+    }
+    .ui-panel-inner {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        right: 0;
+        bottom: 0px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (min-width:35em) {
+
+    	
+    }
+	</style>
+</head>
+
+<body>
+	<div id="main-page" data-role="page">
+	  <div data-role="panel" data-display="overlay" id="model_details_panel">
+    	<ul data-role="listview" class="list-view-scroll">
+	    	<li class="wrap-text">设备名称：VAV-24f-A201-0013</li>
+	    	<li class="wrap-text">设备编号：12039884777723312</li>
+	    	<li class="wrap-text">设备CAD图纸编号：AFJ-02938-K983-KK</li>
+	    	<li class="wrap-text">设备最大功率：1500 w</li>
+	    	<li class="wrap-text">设备最大排风量：1000 m^2 / h</li>
+	    	<li class="wrap-text">设备额定功率：1w w</li>
+	    	<li class="wrap-text">设备供应商名称：昆明正大立方科技有限公司</li>
+	    	<li class="wrap-text">设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+    	</ul>
+    </div><!-- /panel -->
+
+		<div data-role="popup" id="model_details_popup">
+		  <ul data-role="listview" class="list-view-scroll">
+	    	<li class="wrap-text">设备名称：VAV-24f-A201-0013</li>
+	    	<li class="wrap-text">设备编号：12039884777723312</li>
+	    	<li class="wrap-text">设备CAD图纸编号：AFJ-02938-K983-KK</li>
+	    	<li class="wrap-text">设备最大功率：1500 w</li>
+	    	<li class="wrap-text">设备最大排风量：1000 m^2 / h</li>
+	    	<li class="wrap-text">设备额定功率：1w w</li>
+	    	<li class="wrap-text">设备供应商名称：昆明正大立方科技有限公司</li>
+	    	<li class="wrap-text">设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+    	</ul>
+		</div>
+
+		<div role="main" class="ui-content" data-position="fixed">
+		</div><!-- /content -->
+
+		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
+   		<a href="#model_details_popup" id="model_details_popup_btn" data-rel="popup" data-transition="slideup" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn">No text</a>
+   		<a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-gear ui-btn-icon-notext ui-corner-all center-btn">No text</a>
+		</div><!-- /footer -->
+	</div><!-- /page -->
+
+	<script src="js/three.min.js"></script>
+	<!-- // <script src="js/TrackballControls.js"></script>		 -->
+	<script src="js/OrbitControls.js"></script>		
+	<script src="js/OBJLoader.js"></script>
+	<!-- // <script src="js/DDSLoader.js"></script> -->
+	<!-- // <script src="js/MTLLoader.js"></script> -->
+	<!-- // <script src="js/OBJMTLLoader.js"></script> -->
+
+	<script type="x-shader/x-vertex" id="vertexShader">
+		varying vec3 vWorldPosition;
+		void main() {
+
+			vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+			vWorldPosition = worldPosition.xyz;
+
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+		}
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentShader">
+		uniform vec3 topColor;
+		uniform vec3 bottomColor;
+		uniform float offset;
+		uniform float exponent;
+
+		varying vec3 vWorldPosition;
+
+		void main() {
+
+			float h = normalize( vWorldPosition + offset ).y;
+			gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h, 0.0 ), exponent ), 0.0 ) ), 1.0 );
+
+		}
+	</script>
+
+	<script>
+		var SCREEN_WIDTH = window.innerWidth;
+		var SCREEN_HEIGHT = window.innerHeight;
+
+		var container, stats;
+		var camera, scene, renderer;
+
+		var clock = new THREE.Clock();
+
+		init();
+		animate();
+
+		function init() {
+
+			container = document.createElement( 'div' );
+			$(".ui-content").append( container );
+
+			// CAMERA
+
+			// camera = new THREE.PerspectiveCamera( 40, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 10000 );
+			// camera.position.set( 700, 200, - 500 );
+
+			camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 5000 );
+			camera.position.set( 0, 0, 250 );
+
+			// SCENE
+
+			scene = new THREE.Scene();
+
+			scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
+			scene.fog.color.setHSL( 0.6, 0, 1 );
+
+			// CONTROLS
+
+			controls = new THREE.OrbitControls( camera );
+			controls.maxPolarAngle = 0.9 * Math.PI / 2;
+			// controls.enableZoom = false;
+			
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
+
+
+			// LIGHTS
+
+			// var hemiLight = new THREE.HemisphereLight( 0xaabbff, 0x040404, 0.3 );
+
+			var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+			hemiLight.color.setHSL( 0.6, 1, 0.6 );
+			hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+
+			hemiLight.position.y = 500;
+			scene.add( hemiLight );
+
+			// d light
+
+			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			dirLight.color.setHSL( 0.1, 1, 0.95 );
+			dirLight.position.set( -1, 1.75, 1 );
+			dirLight.position.multiplyScalar( 50 );
+			scene.add( dirLight );
+
+			dirLight.castShadow = true;
+
+			dirLight.shadowMapWidth = 2048;
+			dirLight.shadowMapHeight = 2048;
+
+			var d = 50;
+
+			dirLight.shadowCameraLeft = -d;
+			dirLight.shadowCameraRight = d;
+			dirLight.shadowCameraTop = d;
+			dirLight.shadowCameraBottom = -d;
+
+			dirLight.shadowCameraFar = 3500;
+			dirLight.shadowBias = -0.0001;
+			dirLight.shadowDarkness = 0.35;
+
+			// GROUND
+
+			var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
+			var groundMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x050505 } );
+			groundMat.color.setHSL( 0.095, 1, 0.75 );
+
+			var ground = new THREE.Mesh( groundGeo, groundMat );
+			ground.rotation.x = -Math.PI/2;
+			ground.position.y = -33;
+			scene.add( ground );
+
+			ground.receiveShadow = true;
+
+			// SKYDOME
+
+			var vertexShader = document.getElementById( 'vertexShader' ).textContent;
+			var fragmentShader = document.getElementById( 'fragmentShader' ).textContent;
+			var uniforms = {
+				topColor: 	 { type: "c", value: new THREE.Color( 0x0077ff ) },
+				bottomColor: { type: "c", value: new THREE.Color( 0xffffff ) },
+				offset:		 { type: "f", value: 400 },
+				exponent:	 { type: "f", value: 0.6 }
+			};
+			uniforms.topColor.value.copy( hemiLight.color );
+
+			var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
+			var skyMat = new THREE.ShaderMaterial( {
+				uniforms: uniforms,
+				vertexShader: vertexShader,
+				fragmentShader: fragmentShader,
+				side: THREE.BackSide
+			} );
+
+			var sky = new THREE.Mesh( skyGeo, skyMat );
+			scene.add( sky );
+
+			// Model
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function ( item, loaded, total ) {
+
+				console.log( item, loaded, total );
+
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log( Math.round(percentComplete, 2) + '% downloaded' );
+				}
+			};
+
+			var onError = function ( xhr ) {
+			};
+
+			var texture = new THREE.Texture();
+			var imgLoader = new THREE.ImageLoader( manager );
+			imgLoader.load( 'texture_orange.jpg', function ( image ) {
+
+				texture.image = image;
+				texture.needsUpdate = true;
+
+			} );
+
+			var loader = new THREE.OBJLoader( manager );
+			// loader.load( 'http://threejs.org/examples/obj/male02/male02.obj', function ( object ) {
+			// loader.load( 'iPhone_6_obj.obj', function ( object ) {
+			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			loader.load( 'male02.obj', function ( object ) {
+			// loader.load( 'Bo_Concept_Imola.obj', function ( object ) {
+			// loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
+			// loader.load( 'ship.obj', function ( object ) {
+			// loader.load( 'deer-obj.obj', function ( object ) {
+      // THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+			// var loader = new THREE.OBJMTLLoader();
+			// loader.load( 'Bo_Concept_Imola.obj', 'Bo_Concept_Imola.mtl', function ( object ) {
+			// loader.load( 'deer-obj.obj', 'deer-obj.mtl', function ( object ) {
+			// loader.load( 'house_01.obj', 'house_01.mtl', function ( object ) {
+
+				object.traverse( function ( child ) {
+					if ( child instanceof THREE.Mesh ) {
+						// child.material.map = texture;
+						// child.material = material;
+						child.material.map = texture;
+						// child.material.needsUpdate = true;
+					}
+
+				} );
+				scene.add( object );
+
+			}, onProgress, onError );
+
+			// RENDERER
+
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setClearColor( scene.fog.color );
+
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			container.appendChild( renderer.domElement );
+
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+
+			// renderer.shadowMap.enabled = true;
+			// renderer.shadowMap.cullFace = THREE.CullFaceBack;
+
+			// STATS
+
+			// stats = new Stats();
+			// container.appendChild( stats.domElement );
+
+			// MODEL
+
+			// var loader = new THREE.JSONLoader();
+			// loader.load( "obj/lightmap/lightmap.js", function ( geometry, materials ) {
+
+			// 	for ( var i = 0; i < materials.length; i ++ ) {
+
+			// 		materials[ i ].lightMapIntensity = 0.75;
+
+			// 	}
+
+			// 	var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+
+			// 	mesh.scale.multiplyScalar( 100 );
+			// 	scene.add( mesh );
+
+			// } );
+
+			//
+
+			window.addEventListener( 'resize', onWindowResize, false );
+
+		}
+
+		function onWindowResize() {
+
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+		}
+
+		//
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+
+			renderer.render( scene, camera );
+			// stats.update();
+
+		}
+
+	</script>
+</body>
+</html>
