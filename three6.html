@@ -148,6 +148,7 @@
 
 		var container, stats;
 		var camera, scene, renderer;
+		var bbox, bboxCenter;
 
 		var clock = new THREE.Clock();
 
@@ -179,7 +180,7 @@
 			controls = new THREE.OrbitControls( camera );
 			controls.maxPolarAngle = 0.9 * Math.PI / 2;
 			// controls.enableZoom = false;
-			
+
 			$("#model_details_panel").on("panelopen", function(event, ui) {
 					controls.enabled = false;
 				});
@@ -232,7 +233,7 @@
 
 			var ground = new THREE.Mesh( groundGeo, groundMat );
 			ground.rotation.x = -Math.PI/2;
-			ground.position.y = -33;
+			ground.position.y = -100;
 			scene.add( ground );
 
 			ground.receiveShadow = true;
@@ -314,6 +315,17 @@
 					}
 
 				} );
+
+				bbox = new THREE.Box3().setFromObject(object);
+				bboxCenter = new THREE.Vector3();
+				bboxCenter.subVectors(bbox.max, bbox.min);
+				bboxCenter.multiplyScalar(0.5);
+				bboxCenter.add(bbox.min);
+				bboxCenter.applyMatrix4(object.matrixWorld);
+
+				object.position.y = -bboxCenter.y;
+
+
 				scene.add( object );
 
 			}, onProgress, onError );
@@ -377,8 +389,13 @@
 
 			requestAnimationFrame( animate );
 
-			renderer.render( scene, camera );
+			render();
 			// stats.update();
+
+		}
+
+		function render(){
+			renderer.render( scene, camera );
 
 		}
 
