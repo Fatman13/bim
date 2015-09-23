@@ -46,6 +46,7 @@
         bottom: 0px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        padding-top: 0em;
     }
 
     @media (min-width:35em) {
@@ -415,6 +416,7 @@
 				type: 'GET',
 				async: true,
 				data: {
+					// TODO: 更改参数
 					"pi_incode" : "1244293",
 					"ps_floor" : "24",
 					"ps_key" : "53BB8CF2-146A-42A8-8559-10B27BC5C8D5"
@@ -426,7 +428,7 @@
 	        // $.mobile.hidePageLoadingMsg();
 	      }, 
 	      success: function(data){
-	      	console.log(data);
+	      	// console.log(data);
 					// model_details = $.parseJSON(data);
 					model_details = data.data[0];
 					if ( data.success != "1" ) { return ; }
