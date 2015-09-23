@@ -13,6 +13,10 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 更新日志
 
+### 0.0.5
+
+- 添加`JQM Loader`
+
 ### 0.0.4
 
 - 添加ajax读取模型参数接口

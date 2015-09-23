@@ -1,6 +1,10 @@
 # encoding: utf-8
 require 'sinatra'
 
+get '/v6' do 
+	send_file 'three7.html'
+end
+
 get '/shtower.asmx/GetSHTowerProduct' do 
 	content_type :json
 	send_file 'model_property.json'
