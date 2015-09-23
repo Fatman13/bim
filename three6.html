@@ -4,8 +4,11 @@
 	<title>BIM模型展示-测试工程</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- TODO: 修改路径 -->
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<!-- TODO: 修改路径 -->
 	<script src="js/jquery-1.11.3.min.js"></script>
+	<!-- TODO: 修改路径 -->
 	<script src="js/jquery.mobile-1.4.5.min.js"></script>
 	<style>
 		body {
@@ -55,24 +58,7 @@
 <body>
 	<div id="main-page" data-role="page">
 	  <div data-role="panel" data-display="overlay" id="model_details_panel">
-    	<ul data-role="listview" class="list-view-scroll">
-	    	<li class="wrap-text">设备名称：VAV-24f-A201-0013</li>
-	    	<li class="wrap-text">设备编号：12039884777723312</li>
-	    	<li class="wrap-text">设备CAD图纸编号：AFJ-02938-K983-KK</li>
-	    	<li class="wrap-text">设备最大功率：1500 w</li>
-	    	<li class="wrap-text">设备最大排风量：1000 m^2 / h</li>
-	    	<li class="wrap-text">设备额定功率：1w w</li>
-	    	<li class="wrap-text">设备供应商名称：昆明正大立方科技有限公司</li>
-	    	<li class="wrap-text">设备供应商地址：昆明市湖田区方斜路1080号3栋2楼205室</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
-	    	<li class="wrap-text">设备供应商电话：021-65873345</li>
+    	<ul data-role="listview" class="list-view-scroll" data-filter="true" id="model_details_panel_ul">
     	</ul>
     </div><!-- /panel -->
 
@@ -106,9 +92,12 @@
 		</div><!-- /footer -->
 	</div><!-- /page -->
 
+	<!-- TODO: 修改路径 -->
 	<script src="js/three.min.js"></script>
 	<!-- // <script src="js/TrackballControls.js"></script>		 -->
-	<script src="js/OrbitControls.js"></script>		
+	<!-- TODO: 修改路径 -->
+	<script src="js/OrbitControls.js"></script>
+	<!-- TODO: 修改路径 -->
 	<script src="js/OBJLoader.js"></script>
 	<!-- // <script src="js/DDSLoader.js"></script> -->
 	<!-- // <script src="js/MTLLoader.js"></script> -->
@@ -143,12 +132,23 @@
 	</script>
 
 	<script>
+		jQuery.extend({
+
+			getQueryParameters : function(str) {
+				return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+			}
+		});
+	</script>
+
+	<script>
+	  // pi_incode=1244293&ps_floor=24F&ps_key=53BB8CF2-146A-42A8-8559-10B27BC5C8D5
 		var SCREEN_WIDTH = window.innerWidth;
 		var SCREEN_HEIGHT = window.innerHeight;
 
 		var container, stats;
 		var camera, scene, renderer;
 		var bbox, bboxCenter;
+		var queryString;
 
 		var clock = new THREE.Clock();
 
@@ -156,6 +156,8 @@
 		animate();
 
 		function init() {
+
+			queryString = $.getQueryParameters();
 
 			container = document.createElement( 'div' );
 			$(".ui-content").append( container );
@@ -282,6 +284,7 @@
 
 			var texture = new THREE.Texture();
 			var imgLoader = new THREE.ImageLoader( manager );
+			// TODO: 修改路径
 			imgLoader.load( 'texture_orange.jpg', function ( image ) {
 
 				texture.image = image;
@@ -294,6 +297,7 @@
 			// loader.load( 'iPhone_6_obj.obj', function ( object ) {
 			// loader.load( 'Jack_Skellington.obj', function ( object ) {
 			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			// TODO: 修改路径
 			loader.load( 'male02.obj', function ( object ) {
 			// loader.load( 'Bo_Concept_Imola.obj', function ( object ) {
 			// loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
@@ -399,6 +403,53 @@
 
 		}
 
+	</script>
+
+	<script>
+	  var model_details; 
+
+	  $(document).ready(function() {
+		  $.ajax({
+				// TODO: 更改路径
+				url: "/shtower.asmx/GetSHTowerProduct", 
+				type: 'GET',
+				async: true,
+				data: {
+					"pi_incode" : "1244293",
+					"ps_floor" : "24",
+					"ps_key" : "53BB8CF2-146A-42A8-8559-10B27BC5C8D5"
+				}, 
+				beforeSend: function() {
+	        // $.mobile.showPageLoadingMsg(true);
+	      },
+	      complete: function() {
+	        // $.mobile.hidePageLoadingMsg();
+	      }, 
+	      success: function(data){
+	      	console.log(data);
+					// model_details = $.parseJSON(data);
+					model_details = data.data[0];
+					if ( data.success != "1" ) { return ; }
+					for ( var key in model_details ){
+						if(model_details.hasOwnProperty(key)){
+							var detail_entry = document.createElement("li");
+							detail_entry.className = "wrap-text";
+							detail_entry.innerHTML = key + ": " + model_details[key];
+							$("#model_details_panel_ul").append(detail_entry);
+						}
+					}
+					$("#model_details_panel_ul").listview('refresh');
+
+				},
+				error: function (request, error) {
+					// alert('Network error has occurred please try again!');
+					var detail_entry = document.createElement("li");
+					detail_entry.className = "wrap-text";
+					detail_entry.innerHTML = "网络连接错误";
+					$("#model_details_panel_ul").append(detail_entry);
+				}
+			});
+		});
 	</script>
 </body>
 </html>
