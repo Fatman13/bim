@@ -35,7 +35,6 @@
 	<!-- TODO: 修改路径 -->
 	<script src="js/OrbitControls.js"></script>
 	<!-- // <script src="js/OBJLoader.js"></script> -->
-	<!-- TODO: 修改路径 -->
 	<!-- // <script src="js/DDSLoader.js"></script> -->
 	<!-- TODO: 修改路径 -->
 	<script src="js/MTLLoader.js"></script>
@@ -159,6 +158,7 @@
 			var onProgress = function ( xhr ) {
 				if ( xhr.lengthComputable ) {
 					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log(Math.round(percentComplete, 2) + "%");
 					$(".ui-loader").html("<h1>模型载入中..." + Math.round(percentComplete, 2) + "%</h1>");
 				}
 			};
@@ -190,8 +190,9 @@
 			// loader.load( 'ship.obj', function ( object ) {
 			// loader.load( 'deer-obj.obj', function ( object ) {
       // THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+      // THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
 
-			var loader = new THREE.OBJMTLLoader();
+			var loader = new THREE.OBJMTLLoader( manager );
 			// loader.load( 'Bo_Concept_Imola.obj', 'Bo_Concept_Imola.mtl', function ( object ) {
 			// loader.load( "bolt_and_nut.obj", "bolt_and_nut.mtl", function ( object ) {
 			// loader.load( "bird_decoration.obj", "bird_decoration.mtl", function ( object ) {
