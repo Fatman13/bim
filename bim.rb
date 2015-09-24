@@ -1,6 +1,10 @@
 # encoding: utf-8
 require 'sinatra'
 
+get '/' do 
+	send_file 'three8.html'
+end
+
 get '/v6' do 
 	send_file 'three7.html'
 end

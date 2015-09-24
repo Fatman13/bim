@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BIM模型展示-测试工程</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jqm-override.css">
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div id="main-page" data-role="page">
+
+	  <div data-role="panel" data-display="overlay" id="model_details_panel">
+    	<ul data-role="listview" class="list-view-scroll" data-filter="true" id="model_details_panel_ul">
+    	</ul>
+    </div>
+
+		<div role="main" class="ui-content" data-position="fixed">
+		</div>
+
+		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
+   		<a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn"></a>
+		</div>
+	</div>
+
+	<!-- TODO: 修改路径 -->
+	<script src="js/three.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/OrbitControls.js"></script>
+	<!-- // <script src="js/OBJLoader.js"></script> -->
+	<!-- TODO: 修改路径 -->
+	<!-- // <script src="js/DDSLoader.js"></script> -->
+	<!-- TODO: 修改路径 -->
+	<script src="js/MTLLoader.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/OBJMTLLoader.js"></script>
+
+  <script>
+		jQuery.extend({
+			getQueryParameters : function(str) {
+				return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+			}
+		});
+	</script>
+
+	<script>
+		// loader 
+		$(document).ready( function(){
+			$.mobile.loading( "show", {
+            text: "模型载入中...",
+            textVisible: true,
+            theme: $.mobile.loader.prototype.options.theme,
+            textonly: true,
+            html: ""
+    	});
+		});
+	</script>
+
+	<script>
+	  // pi_incode=1244293&ps_floor=24F&ps_key=53BB8CF2-146A-42A8-8559-10B27BC5C8D5
+		var SCREEN_WIDTH = window.innerWidth;
+		var SCREEN_HEIGHT = window.innerHeight;
+
+		var container, stats;
+		var camera, scene, renderer;
+		var bbox, bboxCenter;
+		var queryString;
+
+		var clock = new THREE.Clock();
+
+		init();
+		animate();
+
+		function init() {
+
+			queryString = $.getQueryParameters();
+
+			container = document.createElement( 'div' );
+			$(".ui-content").append( container );
+
+			// CAMERA
+
+			camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 5000 );
+			camera.position.set( 0, 0, 200 );
+
+			// SCENE
+
+			scene = new THREE.Scene();
+
+			// scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
+			// scene.fog.color.setHSL( 0.6, 0, 1 );
+
+			// CONTROLS
+
+			controls = new THREE.OrbitControls( camera );
+			// controls.maxPolarAngle = 0.9 * Math.PI / 2;
+			// controls.enableZoom = false;
+
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
+
+
+			// LIGHTS
+
+			var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+			// hemiLight.color.setHSL( 0.6, 1, 0.6 );
+			// hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+			hemiLight.position.y = 500;
+			scene.add( hemiLight );
+
+			// a light 
+
+			var ambientLight = new THREE.AmbientLight(0x332222);
+			scene.add(ambientLight);
+
+			// d light
+
+			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			dirLight.color.setHSL( 0.1, 1, 0.95 );
+			dirLight.position.set( -1, 1.75, 1 );
+			dirLight.position.multiplyScalar( 50 );
+			scene.add( dirLight );
+
+			dirLight.castShadow = true;
+
+			dirLight.shadowMapWidth = 2048;
+			dirLight.shadowMapHeight = 2048;
+
+			var d = 50;
+
+			dirLight.shadowCameraLeft = -d;
+			dirLight.shadowCameraRight = d;
+			dirLight.shadowCameraTop = d;
+			dirLight.shadowCameraBottom = -d;
+
+			dirLight.shadowCameraFar = 3500;
+			dirLight.shadowBias = -0.0001;
+			dirLight.shadowDarkness = 0.35;
+
+			// Model
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function ( item, loaded, total ) {
+				console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					$(".ui-loader").html("<h1>模型载入中..." + Math.round(percentComplete, 2) + "%</h1>");
+				}
+			};
+
+			var onError = function ( xhr ) {
+			};
+
+			// var texture = new THREE.Texture();
+			// var imgLoader = new THREE.ImageLoader( manager );
+			// // TODO: 修改材质路径
+			// imgLoader.load( 'texture_orange.jpg', function ( image ) {
+
+			// 	texture.image = image;
+			// 	texture.needsUpdate = true;
+
+			// } );
+
+			// var loader = new THREE.OBJLoader( manager );
+			// loader.load( 'http://threejs.org/examples/obj/male02/male02.obj', function ( object ) {
+			// loader.load( 'iPhone_6_obj.obj', function ( object ) {
+			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			// loader.load( 'Jack_Skellington.obj', function ( object ) {
+			// loader.load( 'male02.obj', function ( object ) {
+			// loader.load( 'goblin_obj.obj', function ( object ) {
+			// loader.load( 'Chair.obj', function ( object ) {
+			// loader.load( 'mpm_vol.06_p24.OBJ', function ( object ) {
+			// loader.load( 'Bo_Concept_Imola.obj', function ( object ) {
+			// loader.load( 'Dodge_Chellenger_SRT10_OBJ.obj', function ( object ) {
+			// loader.load( 'ship.obj', function ( object ) {
+			// loader.load( 'deer-obj.obj', function ( object ) {
+      // THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+			var loader = new THREE.OBJMTLLoader();
+			// loader.load( 'Bo_Concept_Imola.obj', 'Bo_Concept_Imola.mtl', function ( object ) {
+			// loader.load( "bolt_and_nut.obj", "bolt_and_nut.mtl", function ( object ) {
+			// loader.load( "bird_decoration.obj", "bird_decoration.mtl", function ( object ) {
+			// loader.load( "BR_Lava.obj", "BR_Lava.mtl", function ( object ) {
+			// loader.load( "Katana.obj", "Katana.mtl", function ( object ) {
+			// loader.load( "sculpt.obj", "sculpt.mtl", function ( object ) {
+			// TODO: 修改路径				
+			loader.load( "lego.obj", "lego.mtl", function ( object ) {
+			// loader.load( "rubiks_cube.obj", "rubiks_cube.mtl", function ( object ) {
+			// loader.load( 'broccoli.obj', 'broccoli.mtl', function ( object ) {
+			// loader.load( 'deer-obj.obj', 'deer-obj.mtl', function ( object ) {
+			// loader.load( 'house_01.obj', 'house_01.mtl', function ( object ) {
+
+				bbox = new THREE.Box3().setFromObject(object);
+				bboxCenter = new THREE.Vector3();
+				bboxCenter.subVectors(bbox.max, bbox.min);
+				bboxCenter.multiplyScalar(0.5);
+				bboxCenter.add(bbox.min);
+				bboxCenter.applyMatrix4(object.matrixWorld);
+
+				object.position.y -= bboxCenter.y;
+				object.position.x = 0;
+				object.position.z = 0;
+
+				scene.add( object );
+
+				// loader
+			  $.mobile.loading( "hide" );
+
+			}, onProgress, onError );
+
+			// RENDERER
+
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			// renderer.setClearColor( scene.fog.color );
+
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			container.appendChild( renderer.domElement );
+
+			// renderer.gammaInput = true;
+			// renderer.gammaOutput = true;
+
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function animate() {
+			requestAnimationFrame( animate );
+			render();
+		}
+
+		function render(){
+			renderer.render( scene, camera );
+		}
+	</script>
+
+	<script>
+	  var model_details; 
+
+	  $(document).ready(function() {
+	  	// console.log("dom ready...");
+
+		  $.ajax({
+				// TODO: 更改路径
+				// ajax 请求最好是把本文件挂在api接口相同的域名下，否则可能会出错
+				url: "/shtower.asmx/GetSHTowerProduct", 
+				type: 'GET',
+				async: true,
+				data: {
+					// TODO: 更改参数
+					"pi_incode" : "1244293",
+					"ps_floor" : "24",
+					"ps_key" : "53BB8CF2-146A-42A8-8559-10B27BC5C8D5"
+				}, 
+				beforeSend: function() {
+	        // $.mobile.showPageLoadingMsg(true);
+	      },
+	      complete: function() {
+	        // $.mobile.hidePageLoadingMsg();
+	      }, 
+	      success: function(data){
+	      	// console.log(data);
+					// model_details = $.parseJSON(data);
+					model_details = data.data[0];
+					if ( data.success != "1" ) { return ; }
+					for ( var key in model_details ){
+						if(model_details.hasOwnProperty(key)){
+							var detail_entry = document.createElement("li");
+							detail_entry.className = "wrap-text";
+							detail_entry.innerHTML = key + ": " + model_details[key];
+							$("#model_details_panel_ul").append(detail_entry);
+						}
+					}
+					$("#model_details_panel_ul").listview('refresh');
+
+				},
+				error: function (request, error) {
+					// alert('Network error has occurred please try again!');
+					var detail_entry = document.createElement("li");
+					detail_entry.className = "wrap-text";
+					detail_entry.innerHTML = "网络连接错误";
+					$("#model_details_panel_ul").append(detail_entry);
+				}
+			});
+		});
+	</script>
+</body>
+</html>

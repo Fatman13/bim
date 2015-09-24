@@ -13,6 +13,11 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 更新日志
 
+### 0.0.6
+
+- 优化、清理代码
+- 更新背景，添加参照物？
+
 ### 0.0.5
 
 - 添加`JQM Loader`
