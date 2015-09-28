@@ -13,6 +13,13 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 更新日志
 
+### 0.0.8
+
+- 摄像机添加光源
+- `three.min.js`更新至r72
+- 控制按需改回至`TrackBallControls`
+- 优化、清理代码
+
 ### 0.0.7
 
 - 更新`MTLLoader`和`OBJMTLoader`至r72
