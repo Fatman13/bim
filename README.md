@@ -11,7 +11,16 @@ Obj models used in this project, courtesy of TurboSquid.
 - 浏览器中输入`localhost/v5`，查看`bim.rb`了解更多路径
 - 注意修改`TODO`注释过的地方
 
+# 已知问题
+
+- `MTLOBJLoader`在加载`~60MB`以上的模型时效率较为低下，建议此类模型还是使用`OBJLoaderder`，然后贴上材质。
+
 # 更新日志
+
+### 0.0.9
+
+- 优化摄像机初始位置和FOV
+- 添加视角重置键
 
 ### 0.0.8
 

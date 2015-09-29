@@ -33,9 +33,10 @@
 
 	<!-- TODO: 修改路径 -->
 	<script src="js/three.min.js"></script>
-	<!-- // <script src="js/OrbitControls.js"></script> -->
 	<!-- TODO: 修改路径 -->
 	<script src="js/TrackballControls.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/OBJLoader.js"></script>
 	<!-- TODO: 修改路径 -->
 	<script src="js/MTLLoader.js"></script>
 	<!-- TODO: 修改路径 -->
@@ -158,7 +159,28 @@
 			var onError = function ( xhr ) {
 			};
 
-			var loader = new THREE.OBJMTLLoader( manager );
+			var texture = new THREE.Texture();
+			var imgLoader = new THREE.ImageLoader( manager );
+			// TODO: 修改材质路径
+			imgLoader.load( 'texture_orange.jpg', function ( image ) {
+
+				texture.image = image;
+				texture.needsUpdate = true;
+
+			} );
+
+			var loader = new THREE.OBJLoader( manager );
+			loader.load( '111.obj', function ( object ) {
+
+
+				object.traverse( function ( child ) {
+					if ( child instanceof THREE.Mesh ) {
+						child.material.map = texture;
+					}
+
+				} );
+
+			// var loader = new THREE.OBJMTLLoader( manager );
 			// TODO: 修改路径				
 			// loader.load( "000.obj", "000.mtl", function ( object ) {
 			// loader.load( "111.obj", "111.mtl", function ( object ) {
@@ -170,7 +192,7 @@
 			// loader.load( "777.obj", "777.mtl", function ( object ) {
 			// loader.load( "888.obj", "888.mtl", function ( object ) {
 			// loader.load( "999.obj", "999.mtl", function ( object ) {
-			loader.load( "zzz.obj", "zzz.mtl", function ( object ) {
+			// loader.load( "zzz.obj", "zzz.mtl", function ( object ) {
 
 				bbox = new THREE.Box3().setFromObject(object);
 				bboxCenter = new THREE.Vector3();
