@@ -13,9 +13,15 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 已知问题
 
-- `MTLOBJLoader`在加载`~60MB`以上的模型时效率较为低下，建议此类模型还是使用`OBJLoaderder`，然后贴上材质。
+- `MTLOBJLoader`在加载`~60MB`以上的模型时效率较为低下，[建议](https://github.com/mrdoob/three.js/issues/5250)此类模型还是使用`OBJLoaderder`，然后贴上材质。
 
 # 更新日志
+
+### 0.0.10
+
+- 使用[RvtVa3c](https://github.com/va3c/RvtVa3c)这个`Revit`插件导出`json`格式的模型。（`Revit`插件安装参见[这里](http://thebuildingcoder.typepad.com/blog/about-the-author.html#2)）
+- 添加`three10.html`用于展示`Revit`插件导出的模型。（`Revit`中的属性得以保留）
+- 很多参考了[Va3cViewer](https://va3c.github.io/)
 
 ### 0.0.9
 

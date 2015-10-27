@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BIM模型展示-测试工程</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jqm-override.css">
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div id="main-page" data-role="page">
+
+	  <div data-role="panel" data-display="overlay" id="model_details_panel">
+    	<ul data-role="listview" class="list-view-scroll" data-filter="true" id="model_details_panel_ul">
+    	</ul>
+    </div>
+
+		<div role="main" class="ui-content" data-position="fixed">
+		</div>
+
+		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
+   		<a id="reset_model_btn" class="ui-btn ui-icon-eye ui-btn-icon-notext ui-corner-all center-btn"></a>
+   		<a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn"></a>
+		</div>
+	</div>
+
+	<!-- TODO: 修改路径 -->
+	<script src="js/three.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/TrackballControls.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/sun-position.js"></script>
+	<!-- TODO: 修改路径 -->
+	<!-- // <script src="js/JSONLoader.js"></script> -->
+
+  <script>
+		jQuery.extend({
+			getQueryParameters : function(str) {
+				return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+			}
+		});
+	</script>
+
+	<script>
+		// loader 
+		$(document).ready( function(){
+			$.mobile.loading( "show", {
+            text: "模型载入中...",
+            textVisible: true,
+            theme: $.mobile.loader.prototype.options.theme,
+            textonly: true,
+            html: ""
+    	});
+		});
+	</script>
+
+	<script>
+		var d2r = Math.PI / 180; 
+
+		function convertPosition( lat, lon, radius ) {
+  		var rc = radius * Math.cos( lat * d2r );
+  		return new THREE.Vector3( rc * Math.cos( lon * d2r ), radius * Math.sin( lat * d2r ), rc * Math.sin( lon * d2r) );
+		}
+	</script>
+
+	<script>
+	  // pi_incode=1244293&ps_floor=24F&ps_key=53BB8CF2-146A-42A8-8559-10B27BC5C8D5
+		var SCREEN_WIDTH = window.innerWidth;
+		var SCREEN_HEIGHT = window.innerHeight;
+
+		var container, stats;
+		var camera, scene, renderer;
+		var bbox, bboxCenter;
+		var queryString;
+
+		init();
+		animate();
+
+		function init() {
+
+			queryString = $.getQueryParameters();
+
+			container = document.createElement( 'div' );
+			$(".ui-content").append( container );
+
+			// SCENE
+
+			scene = new THREE.Scene();
+
+			// CAMERA
+
+			// camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 5000 );
+			// camera.position.set( 0, 0, 5000 );
+			// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 100000 );
+			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 15000 );
+		  // camera.position.set( 15000, 15000, 15000 );
+		  camera.position.set( 2000, 2000, 2000 );
+
+			// CONTROLS
+
+			controls = new THREE.OrbitControls( camera );
+			// controls.maxPolarAngle = 0.9 * Math.PI / 2;
+			// controls.enableZoom = false;
+
+			// controls = new THREE.TrackballControls( camera );
+
+	  //   controls.rotateSpeed = 1.5;
+	  //   controls.zoomSpeed = 1.2;
+	  //   controls.panSpeed = 0.2;
+	  //   controls.noZoom = false;
+	  //   controls.noPan = false;
+	  //   controls.staticMoving = false;
+	  //   controls.dynamicDampingFactor = 0.3;
+	  //   controls.minDistance = 1.1;
+	    // controls.maxDistance = 100;
+
+	    // reset btn
+
+	    $("#reset_model_btn").on("click", function(event){
+	    	controls.reset();
+	    });
+
+	    // model detail panel
+
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
+
+			// RENDERER
+
+			renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true } );
+			// TODO: 背景色
+			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			container.appendChild( renderer.domElement );
+
+			// load model
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function ( item, loaded, total ) {
+				console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log(Math.round(percentComplete, 2) + "%");
+					$(".ui-loader").html("<h1>模型载入中..." + Math.round(percentComplete, 2) + "%</h1>");
+				}
+			};
+
+			var onError = function ( xhr ) {
+			};
+
+			// var loader = new THREE.JSONLoader(manager);
+			var loader = new THREE.ObjectLoader();
+
+			// loader.load( 'hotel2.js', function ( geometry, material ) {
+			loader.load( 'hotel2.js', function ( object ) {
+
+				// var object = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+				scene.add(object);
+				// scene = result;
+
+				// pt light
+				// scene.add(camera);
+
+				// var pointLight = new THREE.PointLight();
+    //   	pointLight.color = new THREE.Color(0xffffff);
+    //   	camera.add(pointLight);
+
+				// a light 
+
+				// var ambientLight = new THREE.AmbientLight(0xffffff);0x444444
+				var ambientLight = new THREE.AmbientLight(0x332222);
+				// var ambientLight = new THREE.AmbientLight(0x444444);
+				scene.add(ambientLight);
+
+				// var directionalLight = new THREE.DirectionalLight();
+    //     directionalLight.position.copy(new THREE.Vector3(2000, 2000, 2000));
+    //     directionalLight.castShadow = true;
+    //     directionalLight.shadowCameraVisible = false;
+    //     directionalLight.shadowCameraNear = 25;
+    //     directionalLight.shadowCameraFar = 200;
+    //     directionalLight.shadowCameraLeft = -50;
+    //     directionalLight.shadowCameraRight = 50;
+    //     directionalLight.shadowCameraTop = 50;
+    //     directionalLight.shadowCameraBottom = -50;
+    //     directionalLight.shadowMapWidth = 2048;
+    //     directionalLight.shadowMapHeight = 2048;
+
+    //     directionalLight.name = 'dirLight';
+    //     scene.add(directionalLight);
+
+				// Tokyo
+  		// 	var latlong = [35.6895, 139.6917];
+				// var light = new THREE.DirectionalLight( 0xffffff, 1 );
+			 //  var pos = new THREE.Vector3( 0, 300, 0 );			  
+
+			 //  light.position = pos;
+			 //  scene.add( light );
+
+			 //  light = new THREE.DirectionalLight( 0xffffff, 1 );
+			 //  // Tokyo
+  		//   var latlong = [35.6895, 139.6917];
+			 //  // (year, month, day, hour, minutes, sec, lat, long)
+			 //  latlon = sunPosition( 2015, 3, 13, 12, 60, 0, latlong[0], latlong[1]  );
+			 //  // console.log ( latlon );
+			 //  var pos = convertPosition(  latlon[0], latlon[1], 10000 );
+				// // var pos = convertPosition(  43, -75, 10000 );
+
+			 //  light.position = pos;
+			 //  light.castShadow = true;
+			 //  light.shadowMapWidth = 2048;
+			 //  light.shadowMapHeight = 2048;
+			 //  var d = 10000;
+			 //  light.shadowCameraLeft = -d;
+			 //  light.shadowCameraRight = d;
+			 //  light.shadowCameraTop = d * 2;
+			 //  light.shadowCameraBottom = -d * 2;
+
+			 //  light.shadowCameraNear = 1000;
+			 //  light.shadowCameraFar = 20000;
+			 //  // light.shadowCameraVisible = true;
+			 //  scene.add( light );
+
+			  // addPointLight(0xffffff, new THREE.Vector3(10, 0, 0), 'sl3');
+			  // var pointLight = new THREE.PointLight();
+     //    pointLight.color = new THREE.Color(0xffffff);
+        // pointLight.intensity = 3;
+        // pointLight.distance = 60;
+
+        // pointLight.position.set(0, 200, 0);
+        // pointLight.name = "ptlight";
+        // scene.add(pointLight);
+
+        // var bulbMat = new THREE.MeshBasicMaterial();
+        // bulbMat.color = new THREE.Color(0xffffff);
+        // pointLight.add(new THREE.Mesh(new THREE.SphereGeometry(100), bulbMat));
+
+			  // ground box
+    		// var geometry = new THREE.BoxGeometry( 20000, 100, 20000 );
+    		// var material = new THREE.MeshBasicMaterial( { color: 0xaaaaaa } );
+    		// var mesh = new THREE.Mesh( geometry, material );
+    		// mesh.position.set( 0, -10, 0 );
+    		// mesh.castShadow = true;
+    		// mesh.receiveShadow = true;
+    		// scene.add( mesh );
+
+				bbox = new THREE.Box3().setFromObject(object);
+				bboxCenter = new THREE.Vector3();
+				bboxCenter.subVectors(bbox.max, bbox.min);
+				bboxCenter.multiplyScalar(0.5);
+				bboxCenter.add(bbox.min);
+				bboxCenter.applyMatrix4(object.matrixWorld);
+
+				object.position.y -= bboxCenter.y;
+				object.position.x = 0;
+				object.position.z = 0;
+
+				var depth = 1.3;
+				var objWidthZ = Math.abs(bbox.max.y - bbox.min.y) / 2;
+				var dist = bboxCenter.distanceTo(camera.position) - objWidthZ;
+        var objHeight = Math.abs(bbox.max.y - bbox.min.y);
+
+        var fov = 2 * Math.atan(objHeight * depth / ( 2 * dist )) * ( 180 / Math.PI );
+
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+
+        var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
+				bboxLine.update();
+				scene.add( bboxLine );
+
+				var directionalLight = new THREE.DirectionalLight();
+        directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
+        directionalLight.castShadow = true;
+        directionalLight.shadowCameraVisible = false;
+        directionalLight.shadowCameraNear = 25;
+        directionalLight.shadowCameraFar = 200;
+        directionalLight.shadowCameraLeft = -50;
+        directionalLight.shadowCameraRight = 50;
+        directionalLight.shadowCameraTop = 50;
+        directionalLight.shadowCameraBottom = -50;
+        directionalLight.shadowMapWidth = 2048;
+        directionalLight.shadowMapHeight = 2048;
+
+        scene.add(directionalLight);
+
+    //     directionalLight = new THREE.DirectionalLight();
+    //     directionalLight.position.copy(bbox.min.multiplyScalar(1.6));
+    //     directionalLight.castShadow = true;
+    //     directionalLight.shadowCameraVisible = false;
+    //     directionalLight.shadowCameraNear = 25;
+    //     directionalLight.shadowCameraFar = 200;
+    //     directionalLight.shadowCameraLeft = -50;
+    //     directionalLight.shadowCameraRight = 50;
+    //     directionalLight.shadowCameraTop = 50;
+    //     directionalLight.shadowCameraBottom = -50;
+    //     directionalLight.shadowMapWidth = 2048;
+    //     directionalLight.shadowMapHeight = 2048;
+
+    //     scene.add(directionalLight);
+
+				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+        // hemiLight.position.copy(new THREE.Vector3(2000, 2000, 2000));
+        hemiLight.position.copy(bbox.max.multiplyScalar(1.3));
+
+        hemiLight.name = 'hemiLight';
+        scene.add(hemiLight);
+
+				// scene.add( object );
+
+				// jqm loader
+			  $.mobile.loading( "hide" );
+
+			}, onProgress, onError );
+
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function animate() {
+			renderer.render( scene, camera );
+			controls.update();
+
+			requestAnimationFrame( animate );
+		}
+	</script>
+
+	<script>
+	  var model_details; 
+
+	  $(document).ready(function() {
+	  	// console.log("dom ready...");
+
+		  $.ajax({
+				// TODO: 更改路径
+				// ajax 请求最好是把本文件挂在api接口相同的域名下，否则可能会出错
+				url: "/shtower.asmx/GetSHTowerProduct", 
+				type: 'GET',
+				async: true,
+				data: {
+					// TODO: 更改参数
+					"pi_incode" : "1244293",
+					"ps_floor" : "24",
+					"ps_key" : "53BB8CF2-146A-42A8-8559-10B27BC5C8D5"
+				}, 
+				beforeSend: function() {
+	        // $.mobile.showPageLoadingMsg(true);
+	      },
+	      complete: function() {
+	        // $.mobile.hidePageLoadingMsg();
+	      }, 
+	      success: function(data){
+	      	// console.log(data);
+					// model_details = $.parseJSON(data);
+					model_details = data.data[0];
+					if ( data.success != "1" ) { return ; }
+					for ( var key in model_details ){
+						if(model_details.hasOwnProperty(key)){
+							var detail_entry = document.createElement("li");
+							detail_entry.className = "wrap-text";
+							detail_entry.innerHTML = key + ": " + model_details[key];
+							$("#model_details_panel_ul").append(detail_entry);
+						}
+					}
+					$("#model_details_panel_ul").listview('refresh');
+
+				},
+				error: function (request, error) {
+					// alert('Network error has occurred please try again!');
+					var detail_entry = document.createElement("li");
+					detail_entry.className = "wrap-text";
+					detail_entry.innerHTML = "网络连接错误";
+					$("#model_details_panel_ul").append(detail_entry);
+				}
+			});
+		});
+	</script>
+</body>
+</html>
