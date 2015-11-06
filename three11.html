@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<!-- <title>BIM模型展示-测试工程</title> -->
+	<title>BIM模型展示-测试工程</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<!-- TODO: 修改路径 -->
@@ -34,10 +34,11 @@
 	<!-- TODO: 修改路径 -->
 	<script src="js/three.min.js"></script>
 	<!-- TODO: 修改路径 -->
+	<script src="js/TrackballControls.js"></script>
 	<script src="js/OrbitControls.js"></script>
-	<!-- TODO: 修改路径 -->
 	<script src="js/sun-position.js"></script>
-	<script src="js/va3c-viewer.js"></script>
+	<!-- TODO: 修改路径 -->
+	<!-- // <script src="js/JSONLoader.js"></script> -->
 
   <script>
 		jQuery.extend({
@@ -61,24 +62,214 @@
 	</script>
 
 	<script>
-		init("hotel2.js");
+		var d2r = Math.PI / 180; 
+
+		function convertPosition( lat, lon, radius ) {
+  		var rc = radius * Math.cos( lat * d2r );
+  		return new THREE.Vector3( rc * Math.cos( lon * d2r ), radius * Math.sin( lat * d2r ), rc * Math.sin( lon * d2r) );
+		}
+	</script>
+
+	<script>
+	  // pi_incode=1244293&ps_floor=24F&ps_key=53BB8CF2-146A-42A8-8559-10B27BC5C8D5
+		var SCREEN_WIDTH = window.innerWidth;
+		var SCREEN_HEIGHT = window.innerHeight;
+
+		var container, stats;
+		var camera, scene, renderer;
+		var bbox, bboxCenter;
+		var queryString;
+
+		init();
 		animate();
 
-	  // reset btn
+		function init() {
 
-    $("#reset_model_btn").on("click", function(event){
-    	// controls.reset();
-    });
+			queryString = $.getQueryParameters();
 
-    // model detail panel
+			container = document.createElement( 'div' );
+			$(".ui-content").append( container );
 
-		$("#model_details_panel").on("panelopen", function(event, ui) {
-				// controls.enabled = false;
-			});
+			// SCENE
 
-		$("#model_details_panel").on("panelclose", function(event, ui) {
-				// controls.enabled = true;
-			});
+			scene = new THREE.Scene();
+
+			// CAMERA
+
+			// camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 5000 );
+			// camera.position.set( 0, 0, 5000 );
+			// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 100000 );
+			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 15000 );
+		  // camera.position.set( 15000, 15000, 15000 );
+		  // camera.position.set( 2000, 2000, 2000 );
+		  camera.position.set( 500, 250, 500 );
+
+			// CONTROLS
+
+			controls = new THREE.OrbitControls( camera );
+			// controls.maxPolarAngle = 0.9 * Math.PI / 2;
+			// controls.enableZoom = false;
+
+			// controls = new THREE.TrackballControls( camera );
+
+	  //   controls.rotateSpeed = 1.5;
+	  //   controls.zoomSpeed = 1.2;
+	  //   controls.panSpeed = 0.2;
+	  //   controls.noZoom = false;
+	  //   controls.noPan = false;
+	  //   controls.staticMoving = false;
+	  //   controls.dynamicDampingFactor = 0.3;
+	  //   controls.minDistance = 1.1;
+	    // controls.maxDistance = 100;
+
+	    // reset btn
+
+	    $("#reset_model_btn").on("click", function(event){
+	    	controls.reset();
+	    });
+
+	    // model detail panel
+
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
+
+			// RENDERER
+
+			renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true } );
+			// TODO: 背景色
+			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			container.appendChild( renderer.domElement );
+
+			// load model
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function ( item, loaded, total ) {
+				console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log(Math.round(percentComplete, 2) + "%");
+					$(".ui-loader").html("<h1>模型载入中..." + Math.round(percentComplete, 2) + "%</h1>");
+				}
+			};
+
+			var onError = function ( xhr ) {
+			};
+
+			var loader = new THREE.ObjectLoader(manager);
+
+			// loader.load( 'hotel2.js', function ( geometry, material ) {
+			// loader.load( 'hotel2.js', function ( object ) {
+			loader.load( 'mesa.js', function ( object ) {
+			// loader.load( '24f.js', function ( object ) {
+			// loader.load( '24fp.js', function ( object ) {
+
+				// var object = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
+				scene.add(object);
+
+				// a light 
+
+				// var ambientLight = new THREE.AmbientLight(0xffffff);0x444444
+				var ambientLight = new THREE.AmbientLight(0x332222);
+				// var ambientLight = new THREE.AmbientLight(0x444444);
+				scene.add(ambientLight);
+
+				// var directionalLight = new THREE.DirectionalLight();
+    //     directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
+    //     directionalLight.castShadow = true;
+    //     directionalLight.shadowCameraVisible = false;
+    //     directionalLight.shadowCameraNear = 25;
+    //     directionalLight.shadowCameraFar = 200;
+    //     directionalLight.shadowCameraLeft = -50;
+    //     directionalLight.shadowCameraRight = 50;
+    //     directionalLight.shadowCameraTop = 50;
+    //     directionalLight.shadowCameraBottom = -50;
+    //     directionalLight.shadowMapWidth = 2048;
+    //     directionalLight.shadowMapHeight = 2048;
+    //     scene.add(directionalLight);
+
+				bbox = new THREE.Box3().setFromObject(object);
+				bboxCenter = new THREE.Vector3();
+				bboxCenter.subVectors(bbox.max, bbox.min);
+				bboxCenter.multiplyScalar(0.5);
+				bboxCenter.add(bbox.min);
+				bboxCenter.applyMatrix4(object.matrixWorld);
+
+				// object.position.y -= bboxCenter.y;
+				// object.position.x = 0;
+				// object.position.z = 0;
+				controls.object.target = bboxCenter;
+
+				var depth = 1.3;
+				var objWidthZ = Math.abs(bbox.max.y - bbox.min.y) / 2;
+				var dist = bboxCenter.distanceTo(camera.position) - objWidthZ;
+        var objHeight = Math.abs(bbox.max.y - bbox.min.y);
+
+        var fov = 2 * Math.atan(objHeight * depth / ( 2 * dist )) * ( 180 / Math.PI );
+
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+
+        // For testing Only
+        var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
+				bboxLine.update();
+				scene.add( bboxLine );
+
+				// 坑：不知道为什么灯光放在摄像定位前面就有问题？
+				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.3);
+        // hemiLight.position.copy(new THREE.Vector3(2000, 2000, 2000));
+        hemiLight.position.copy(bbox.max.multiplyScalar(1.66));
+        hemiLight.name = 'hemiLight';
+        scene.add(hemiLight);
+
+    		var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6 );
+        directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
+        scene.add(directionalLight);
+
+
+     //    var latlong = [35.6895, 139.6917];
+  			// light = new THREE.DirectionalLight( 0xffffff, 1 );
+  			// latlon = sunPosition( 2015, 3, 13, 12, 60, 0, latlong[0], latlong[1]  );
+
+  			// // 第三个参数可能也要根据模型大小改一哈？
+  			// var pos = convertPosition( latlon[0], latlon[1], 1000 );
+  			// light.position.set(pos);
+  			// scene.add(light);
+
+  			// var bulbMat = new THREE.MeshBasicMaterial();
+     //    bulbMat.color = new THREE.Color(0x00ff00);
+     //    light.add(new THREE.Mesh(new THREE.SphereGeometry(100), bulbMat));
+
+				// jqm loader
+			  $.mobile.loading( "hide" );
+
+			}, onProgress, onError );
+
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function animate() {
+			renderer.render( scene, camera );
+			controls.update();
+
+			requestAnimationFrame( animate );
+		}
 	</script>
 
 	<script>

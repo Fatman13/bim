@@ -168,7 +168,10 @@
 			var loader = new THREE.ObjectLoader();
 
 			// loader.load( 'hotel2.js', function ( geometry, material ) {
-			loader.load( 'hotel2.js', function ( object ) {
+			// loader.load( 'hotel2.js', function ( object ) {
+			loader.load( 'mesa.js', function ( object ) {
+			// loader.load( '24f.js', function ( object ) {
+			// loader.load( '24fp.js', function ( object ) {
 
 				// var object = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ) );
 				scene.add(object);
@@ -247,7 +250,7 @@
         // scene.add(pointLight);
 
         // var bulbMat = new THREE.MeshBasicMaterial();
-        // bulbMat.color = new THREE.Color(0xffffff);
+        // bulbMat.color = new THREE.Color(0x00ff00);
         // pointLight.add(new THREE.Mesh(new THREE.SphereGeometry(100), bulbMat));
 
 			  // ground box

@@ -17,6 +17,12 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 更新日志
 
+### 0.0.11
+
+- 修复一个因为`camera`太远，造成模型锯齿形的问题。
+- 添加了一些注释
+- 改善一部分灯光效果。（暂未达到最佳效果）
+
 ### 0.0.10
 
 - 使用[RvtVa3c](https://github.com/va3c/RvtVa3c)这个`Revit`插件导出`json`格式的模型。（`Revit`插件安装参见[这里](http://thebuildingcoder.typepad.com/blog/about-the-author.html#2)）
