@@ -71,6 +71,183 @@
 	</script>
 
 	<script>
+		function computeNormalsAndFaces() {
+      for(var i=0; i<scene.children.length; i++){
+      	// if( scene.children[i].hasOwnProperty("geometry")){
+       //  	scene.children[i].geometry.mergeVertices();
+       //  	// scene.children[i].castShadow = true;
+       //  	scene.children[i].geometry.computeFaceNormals();
+       //  	targetList.push( scene.children[i] );
+      	// }
+      	if( scene.children[i].children.length > 0 ){
+        	for (var k=0; k<scene.children[i].children.length ; k++){
+          	// if(scene.children[i].children[k].hasOwnProperty("geometry")){
+          	// if(scene.children[i].children[k].hasOwnProperty("userData") && !Object.keys(scene.children[i].children[k].userData) === 0 ){
+            	targetList.push(scene.children[i].children[k]);
+          	// }
+        	}
+      	}
+    	}
+    }
+	</script>
+
+	<script>
+		function displayAttributes( obj ) {
+      // msg.innerHTML = '';
+      $("#model_details_panel_ul").empty();
+      var detail_entry;
+
+      var arr = Object.keys( obj );
+      for (var i = 0, len = arr.length; i < len; i++) {
+      	if ( obj[arr[i]] != undefined) {
+        	if ( obj[arr[i]].indexOf('http') == 0) {
+         		// msg.innerHTML += '<a href="'+obj[arr[i]]+'">Click here</a><br>';
+         		console.log("displayAttributes: index of http == 0");
+       		} else {
+         		// msg.innerHTML += arr[i] + ': ' + obj[ arr[i] ] + '<br>';
+         		detail_entry = document.createElement("li");
+         		detail_entry.className = "wrap-text";
+						detail_entry.innerHTML = arr[i] + ": " + obj[ arr[i] ];
+						$("#model_details_panel_ul").append(detail_entry);
+       		}
+     		}
+   		}
+			$("#model_details_panel_ul").listview('refresh');
+      $("#model_details_panel").panel("open");
+
+ 		}
+	</script>
+
+	<script>
+		function clickHandler(event){
+		  // console.log( event );
+		  event.preventDefault();
+
+		  selMaterial = new THREE.MeshBasicMaterial( { color: 'red', side: '2' });   //color for selected mesh element
+
+		  //When clicking without selecting object, replace temp material for meshes and object3D
+		  if(lastMeshMaterial!=-1)
+		  {
+		    //reset last material for last lastMeshID
+		    for(var i = 0; i < scene.children.length;i++)
+		    {
+		      if (scene.children[i].id == lastMeshID)
+		      {
+		        scene.children[i].material = lastMeshMaterial;
+		      }
+		    }
+		  }
+
+		  if(lastObjectMaterial!=-1)
+		  {
+		    //reset last material for last lastObjectID
+		    for(var i = 0; i < scene.children.length;i++)
+		    {
+		      if (scene.children[i].id == lastObjectID)
+		      {
+		        for (var ii = 0; ii < scene.children[i].children.length;ii++)
+		        {
+		          scene.children[i].children[ii].material = lastObjectMaterial;
+		        }
+		      }
+		    }
+		  }
+
+		  var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+		  // projector.unprojectVector( vector, VA3C.camera );
+		  vector.unproject( camera );
+
+		  var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		  //var raycaster = new THREE.Raycaster( VA3C.camera.position, vector.sub( ).normalize() );
+
+		  var intersects = raycaster.intersectObjects( targetList );
+		  //var intersects = raycaster.intersectObjects( VA3C.scene.children.geometry );
+
+		  // raycaster.setFromCamera( mouse, camera );
+			// var intersects = raycaster.intersectObjects( targetList );
+			// var intersects = raycaster.intersectObjects( scene.children );
+
+		  if ( intersects.length > 0 ) {
+
+		    // intersects[ 0 ].object.material.color.setHex( Math.random() * 0xffffff );
+		    // console.log(intersects[0].object.userData);
+
+		    var j =0;
+		    while(j<intersects.length){
+		      //FOR MESHES:
+		      if(!$.isEmptyObject(intersects[j].object.userData)){
+		        console.log(intersects[j].object.userData);
+
+
+		        if(lastMeshMaterial!=-1)
+		        {
+		          //reset last material for last lastMeshID
+		          for(var i = 0; i < scene.children.length;i++)
+		          {
+		            if (scene.children[i].id == lastMeshID)
+		            {
+		              scene.children[i].material = lastMeshMaterial;
+		            }
+		          }
+		        }
+
+		        //set lastMaterial
+		        lastMeshMaterial = intersects[j].object.material;
+
+		        //set lastMeshID
+		        lastMeshID = intersects[j].object.id;
+
+		        //apply SelMaterial
+		        intersects[j].object.material = selMaterial;
+
+
+		        displayAttributes( intersects[j].object.userData );
+
+		        break;
+		      }
+		      //FOR OBJECT3D
+		      if(!$.isEmptyObject(intersects[j].object.parent.userData)){
+		        console.log(intersects[j].object.parent.userData);
+
+		        if(lastObjectMaterial!=-1)
+		        {
+		          //reset last material for last lastObjectID
+		          for(var i = 0; i < scene.children.length;i++)
+		          {
+		            if (scene.children[i].id == lastObjectID)
+		            {
+		              for (var ii = 0; ii < scene.children[i].children.length;ii++)
+		              {
+		                scene.children[i].children[ii].material = lastObjectMaterial;
+		              }
+
+		            }
+		          }
+		        }
+
+		        //set lastMaterial
+		        lastObjectMaterial = intersects[j].object.material;
+
+		        //set lastObjectID
+		        lastObjectID = intersects[j].object.parent.id;
+
+		        //apply SelMaterial
+		        intersects[j].object.material = selMaterial;
+
+		        displayAttributes( intersects[j].object.parent.userData );
+		        break;
+		      }
+		      j++;
+		    } // end of while
+		  } else {
+		     // msg.innerHTML = '';
+      	$("#model_details_panel_ul").empty();
+      	$("#model_details_panel").panel("close");
+		  }
+		}
+	</script>
+
+	<script>
 	  // pi_incode=1244293&ps_floor=24F&ps_key=53BB8CF2-146A-42A8-8559-10B27BC5C8D5
 		var SCREEN_WIDTH = window.innerWidth;
 		var SCREEN_HEIGHT = window.innerHeight;
@@ -79,11 +256,24 @@
 		var camera, scene, renderer;
 		var bbox, bboxCenter;
 		var queryString;
+		// Va3c...
+		var lastMeshMaterial, lastMeshID, lastObjectMaterial, lastObjectID;
+		var selMaterial;
+		var targetList = [];
+
+		// Intercect
+		var raycaster;
+		var mouse = new THREE.Vector2(), INTERSECTED;
 
 		init();
 		animate();
 
 		function init() {
+
+			lastMeshMaterial = -1;
+  		lastMeshID = -1;
+  		lastObjectMaterial = -1;
+  		lastObjectID = -1;
 
 			queryString = $.getQueryParameters();
 
@@ -109,6 +299,9 @@
 			controls = new THREE.OrbitControls( camera );
 			// controls.maxPolarAngle = 0.9 * Math.PI / 2;
 			// controls.enableZoom = false;
+
+			// Va3c
+			raycaster = new THREE.Raycaster();
 
 			// controls = new THREE.TrackballControls( camera );
 
@@ -169,6 +362,7 @@
 
 			// loader.load( 'hotel2.js', function ( geometry, material ) {
 			// loader.load( 'hotel2.js', function ( object ) {
+			// loader.load( 'revit_sample.js', function ( object ) {
 			loader.load( 'mesa.js', function ( object ) {
 			// loader.load( '24f.js', function ( object ) {
 			// loader.load( '24fp.js', function ( object ) {
@@ -220,9 +414,9 @@
         camera.updateProjectionMatrix();
 
         // For testing Only
-        var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
-				bboxLine.update();
-				scene.add( bboxLine );
+        // var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
+				// bboxLine.update();
+				// scene.add( bboxLine );
 
 				// 坑：不知道为什么灯光放在摄像定位前面就有问题？
 				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.3);
@@ -234,6 +428,9 @@
     		var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6 );
         directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
         scene.add(directionalLight);
+
+        //call compute function
+    		computeNormalsAndFaces();
 
 
      //    var latlong = [35.6895, 139.6917];
@@ -248,6 +445,9 @@
   			// var bulbMat = new THREE.MeshBasicMaterial();
      //    bulbMat.color = new THREE.Color(0x00ff00);
      //    light.add(new THREE.Mesh(new THREE.SphereGeometry(100), bulbMat));
+
+  			document.addEventListener( 'dblclick', clickHandler, false );
+  			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 				// jqm loader
 			  $.mobile.loading( "hide" );
@@ -273,54 +473,14 @@
 	</script>
 
 	<script>
-	  var model_details; 
+		function onDocumentMouseMove( event ) {
 
-	  $(document).ready(function() {
-	  	// console.log("dom ready...");
+			event.preventDefault();
 
-		  $.ajax({
-				// TODO: 更改路径
-				// ajax 请求最好是把本文件挂在api接口相同的域名下，否则可能会出错
-				url: "/shtower.asmx/GetSHTowerProduct", 
-				type: 'GET',
-				async: true,
-				data: {
-					// TODO: 更改参数
-					"pi_incode" : "1244293",
-					"ps_floor" : "24",
-					"ps_key" : "53BB8CF2-146A-42A8-8559-10B27BC5C8D5"
-				}, 
-				beforeSend: function() {
-	        // $.mobile.showPageLoadingMsg(true);
-	      },
-	      complete: function() {
-	        // $.mobile.hidePageLoadingMsg();
-	      }, 
-	      success: function(data){
-	      	// console.log(data);
-					// model_details = $.parseJSON(data);
-					model_details = data.data[0];
-					if ( data.success != "1" ) { return ; }
-					for ( var key in model_details ){
-						if(model_details.hasOwnProperty(key)){
-							var detail_entry = document.createElement("li");
-							detail_entry.className = "wrap-text";
-							detail_entry.innerHTML = key + ": " + model_details[key];
-							$("#model_details_panel_ul").append(detail_entry);
-						}
-					}
-					$("#model_details_panel_ul").listview('refresh');
+			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-				},
-				error: function (request, error) {
-					// alert('Network error has occurred please try again!');
-					var detail_entry = document.createElement("li");
-					detail_entry.className = "wrap-text";
-					detail_entry.innerHTML = "网络连接错误";
-					$("#model_details_panel_ul").append(detail_entry);
-				}
-			});
-		});
+		}
 	</script>
 </body>
 </html>
