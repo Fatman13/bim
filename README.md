@@ -17,6 +17,12 @@ Obj models used in this project, courtesy of TurboSquid.
 
 # 更新日志
 
+### 0.0.12
+
+- 添加了双击模型，展示某部件信息的功能。（信息全部源自Revit）
+- 双击后，该部件会被红色高光。
+- 光源与摄像机位置还有待优化。
+
 ### 0.0.11
 
 - 修复一个因为`camera`太远，造成模型锯齿形的问题。

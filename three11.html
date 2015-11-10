@@ -27,7 +27,7 @@
 
 		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
    		<a id="reset_model_btn" class="ui-btn ui-icon-eye ui-btn-icon-notext ui-corner-all center-btn"></a>
-   		<a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn"></a>
+   		<!-- <a href="#model_details_panel" id="model_details_panel_btn" class="ui-btn ui-icon-info ui-btn-icon-notext ui-corner-all center-btn"></a> -->
 		</div>
 	</div>
 
@@ -126,14 +126,18 @@
 		  selMaterial = new THREE.MeshBasicMaterial( { color: 'red', side: '2' });   //color for selected mesh element
 
 		  //When clicking without selecting object, replace temp material for meshes and object3D
+		  // Yu: may be obsolete
 		  if(lastMeshMaterial!=-1)
 		  {
 		    //reset last material for last lastMeshID
-		    for(var i = 0; i < scene.children.length;i++)
+		    // for(var i = 0; i < scene.children.length;i++)
+		    for(var i = 0; i < targetList.length;i++)
 		    {
-		      if (scene.children[i].id == lastMeshID)
+		      // if (scene.children[i].id == lastMeshID)
+		      if (targetList[i].id == lastMeshID)
 		      {
-		        scene.children[i].material = lastMeshMaterial;
+		        // scene.children[i].material = lastMeshMaterial;
+		        targetList[i].material = lastMeshMaterial;
 		      }
 		    }
 		  }
@@ -141,31 +145,38 @@
 		  if(lastObjectMaterial!=-1)
 		  {
 		    //reset last material for last lastObjectID
-		    for(var i = 0; i < scene.children.length;i++)
+		    // for(var i = 0; i < scene.children.length;i++)
+		    for(var i = 0; i < targetList.length;i++)
 		    {
-		      if (scene.children[i].id == lastObjectID)
+		      // if (scene.children[i].id == lastObjectID)
+		      if (targetList[i].id == lastObjectID)
 		      {
-		        for (var ii = 0; ii < scene.children[i].children.length;ii++)
-		        {
-		          scene.children[i].children[ii].material = lastObjectMaterial;
-		        }
+		        // for (var ii = 0; ii < scene.children[i].children.length;ii++)
+		        // {
+		        //   scene.children[i].children[ii].material = lastObjectMaterial;
+		        // }
+		        // targetList[i].material = lastObjectMaterial;
+		        // targetList[i].material.emissive.setHex(lastHex);
+		        INTERSECTED.object.material = lastObjectMaterial;
+
+		        break;
 		      }
 		    }
 		  }
 
-		  var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+		  // var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
 		  // projector.unprojectVector( vector, VA3C.camera );
-		  vector.unproject( camera );
+		  // vector.unproject( camera );
 
-		  var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		  // var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 		  //var raycaster = new THREE.Raycaster( VA3C.camera.position, vector.sub( ).normalize() );
 
-		  var intersects = raycaster.intersectObjects( targetList );
+		  // var intersects = raycaster.intersectObjects( targetList );
 		  //var intersects = raycaster.intersectObjects( VA3C.scene.children.geometry );
 
-		  // raycaster.setFromCamera( mouse, camera );
+		  raycaster.setFromCamera( mouse, camera );
 			// var intersects = raycaster.intersectObjects( targetList );
-			// var intersects = raycaster.intersectObjects( scene.children );
+			var intersects = raycaster.intersectObjects( scene.children, true );
 
 		  if ( intersects.length > 0 ) {
 
@@ -174,7 +185,7 @@
 
 		    var j =0;
 		    while(j<intersects.length){
-		      //FOR MESHES:
+		      //FOR MESHES: // Yu: may be obsolete
 		      if(!$.isEmptyObject(intersects[j].object.userData)){
 		        console.log(intersects[j].object.userData);
 
@@ -182,11 +193,14 @@
 		        if(lastMeshMaterial!=-1)
 		        {
 		          //reset last material for last lastMeshID
-		          for(var i = 0; i < scene.children.length;i++)
+		          // for(var i = 0; i < scene.children.length;i++)
+		          for(var i = 0; i < targetList.length;i++)
 		          {
-		            if (scene.children[i].id == lastMeshID)
+		            // if (scene.children[i].id == lastMeshID)
+		            if (targetList[i].id == lastMeshID)
 		            {
-		              scene.children[i].material = lastMeshMaterial;
+		              // scene.children[i].material = lastMeshMaterial;
+		              targetList[i].material = lastMeshMaterial;
 		            }
 		          }
 		        }
@@ -212,15 +226,20 @@
 		        if(lastObjectMaterial!=-1)
 		        {
 		          //reset last material for last lastObjectID
-		          for(var i = 0; i < scene.children.length;i++)
+		          // for(var i = 0; i < scene.children.length;i++)
+		          for(var i = 0; i < targetList.length;i++)
 		          {
-		            if (scene.children[i].id == lastObjectID)
+		            // if (scene.children[i].id == lastObjectID)
+		            if (targetList[i].id == lastObjectID)
 		            {
-		              for (var ii = 0; ii < scene.children[i].children.length;ii++)
-		              {
-		                scene.children[i].children[ii].material = lastObjectMaterial;
-		              }
-
+		              // for (var ii = 0; ii < scene.children[i].children.length;ii++)
+		              // {
+		              //   scene.children[i].children[ii].material = lastObjectMaterial;
+		              // }
+		              // targetList[i].material = lastObjectMaterial;
+		              // targetList[i].material.emissive.setHex(lastHex);
+		              INTERSECTED.object.material = lastObjectMaterial;
+		              break;
 		            }
 		          }
 		        }
@@ -233,6 +252,9 @@
 
 		        //apply SelMaterial
 		        intersects[j].object.material = selMaterial;
+		        // lastHex = intersects[j].object.material.emissive.getHex();
+		        // intersects[j].object.material.emissive.setHex(0xff0000);
+		        INTERSECTED = intersects[j];
 
 		        displayAttributes( intersects[j].object.parent.userData );
 		        break;
@@ -264,6 +286,7 @@
 		// Intercect
 		var raycaster;
 		var mouse = new THREE.Vector2(), INTERSECTED;
+		var lastHex;
 
 		init();
 		animate();
