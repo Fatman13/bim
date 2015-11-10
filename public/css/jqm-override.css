@@ -36,6 +36,17 @@ body {
   padding-top: 0em;
 }
 
-@media (min-width:35em) {
-  /* test */
+@media ( min-width: 25em ) {
+
+  /* wrap on wide viewports once open */
+
+  .ui-panel-page-content-open.ui-panel-page-content-position-left {
+    margin-right: 17em;
+  }
+  .ui-panel-page-content-open.ui-panel-page-content-position-right {
+    margin-left: 17em;
+  }
+  .ui-panel-page-content-open {
+    width: auto;
+  }
 }

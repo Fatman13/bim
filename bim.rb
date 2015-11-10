@@ -2,6 +2,10 @@
 require 'sinatra'
 
 get '/' do 
+	send_file 'three12.html'
+end
+
+get '/v10' do 
 	send_file 'three11.html'
 end
 

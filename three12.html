@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BIM模型展示-测试工程</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+	<!-- TODO: 修改路径 -->
+	<link rel="stylesheet" href="css/jqm-override.css">
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div id="main-page" data-role="page">
+
+	  <div data-role="panel" data-display="overlay" id="model_details_panel">
+    	<ul data-role="listview" class="list-view-scroll" data-filter="true" id="model_details_panel_ul">
+    	</ul>
+    </div>
+
+		<div role="main" class="ui-content" data-position="fixed">
+		</div>
+
+		<div class="center-wrapper" data-tap-toggle="false" data-role="footer" data-position="fixed">
+   		<a id="reset_model_btn" class="ui-btn ui-icon-eye ui-btn-icon-notext ui-corner-all center-btn"></a>
+		</div>
+	</div>
+
+	<!-- TODO: 修改路径 -->
+	<script src="js/three.min.js"></script>
+	<!-- TODO: 修改路径 -->
+	<script src="js/OrbitControls.js"></script>
+
+  <script>
+		jQuery.extend({
+			getQueryParameters : function(str) {
+				return (str || document.location.search).replace(/(^\?)/,'').split("&").map(function(n){return n = n.split("="),this[n[0]] = n[1],this}.bind({}))[0];
+			}
+		});
+	</script>
+
+	<script>
+		// loader 
+		$(document).ready( function(){
+			$.mobile.loading( "show", {
+            text: "模型载入中...",
+            textVisible: true,
+            theme: $.mobile.loader.prototype.options.theme,
+            textonly: true,
+            html: ""
+    	});
+		});
+	</script>
+
+	<script>
+		function computeNormalsAndFaces() {
+      for(var i=0; i<scene.children.length; i++){
+      	// obsolete?
+      	if( scene.children[i].hasOwnProperty("geometry")){
+        	scene.children[i].geometry.mergeVertices();
+        	// scene.children[i].castShadow = true;
+        	scene.children[i].geometry.computeFaceNormals();
+        	targetList.push( scene.children[i] );
+      	}
+      	if( scene.children[i].children.length > 0 ){
+        	for (var k=0; k<scene.children[i].children.length ; k++){
+        		// yu: object3d has no geo...adding all children to targetlist for now
+          	// if(scene.children[i].children[k].hasOwnProperty("geometry")){
+          	if(scene.children[i].children[k].hasOwnProperty("userData") && 
+          		!(Object.keys(scene.children[i].children[k].userData) === 0) ){
+            	targetList.push(scene.children[i].children[k]);
+          	}
+        	}
+      	}
+    	}
+    }
+	</script>
+
+	<script>
+		function displayAttributes( obj ) {
+      $("#model_details_panel_ul").empty();
+      var detail_entry;
+
+      var arr = Object.keys( obj );
+      for (var i = 0, len = arr.length; i < len; i++) {
+      	if ( obj[arr[i]] != undefined) {
+        	if ( obj[arr[i]].indexOf('http') == 0) {
+         		console.log("displayAttributes: index of http == 0");
+       		} else {
+         		detail_entry = document.createElement("li");
+         		detail_entry.className = "wrap-text";
+						detail_entry.innerHTML = arr[i] + ": " + obj[ arr[i] ];
+						$("#model_details_panel_ul").append(detail_entry);
+       		}
+     		}
+   		}
+			$("#model_details_panel_ul").listview('refresh');
+      $("#model_details_panel").panel("open");
+ 		}
+	</script>
+
+	<script>
+		function clickHandler(event){
+		  event.preventDefault();
+
+		  selMaterial = new THREE.MeshBasicMaterial( { color: 'red', side: '2' });   //color for selected mesh element
+
+		  // When clicking without selecting object, replace temp material for meshes and object3D
+		  // Yu: may be obsolete
+		  if(lastMeshMaterial!=-1)
+		  {
+		    //reset last material for last lastMeshID
+		    for(var i = 0; i < targetList.length;i++)
+		    {
+		      if (targetList[i].id == lastMeshID)
+		      {
+		        targetList[i].material = lastMeshMaterial;
+		      }
+		    }
+		  }
+
+		  // TODO: to be optimized
+		  if(lastObjectMaterial!=-1)
+		  {
+		    INTERSECTED.object.material = lastObjectMaterial;
+		  }
+
+		  // intersects http://stackoverflow.com/questions/33604515/how-to-find-intersect-with-object3d-in-three-js
+		  raycaster.setFromCamera( mouse, camera );
+			var intersects = raycaster.intersectObjects( scene.children, true );
+
+		  if ( intersects.length > 0 ) {
+		    var j =0;
+		    while(j<intersects.length){
+		      //FOR MESHES: // Yu: may be obsolete
+		      if(!$.isEmptyObject(intersects[j].object.userData)){
+		        console.log(intersects[j].object.userData);
+
+		        if(lastMeshMaterial!=-1)
+		        {
+		          //reset last material for last lastMeshID
+		          for(var i = 0; i < targetList.length;i++)
+		          {
+		            if (targetList[i].id == lastMeshID)
+		            {
+		              targetList[i].material = lastMeshMaterial;
+		            }
+		          }
+		        }
+
+		        //set lastMaterial
+		        lastMeshMaterial = intersects[j].object.material;
+		        //set lastMeshID
+		        lastMeshID = intersects[j].object.id;
+		        //apply SelMaterial
+		        intersects[j].object.material = selMaterial;
+
+		        displayAttributes( intersects[j].object.userData );
+		        break;
+		      }
+		      // FOR OBJECT3D
+		      // For rvtVa3C tag 2015.0.0.28 and later, seems exported json are mostly oject3d
+		      if(!$.isEmptyObject(intersects[j].object.parent.userData)){
+		        console.log(intersects[j].object.parent.userData);
+
+		        if(lastObjectMaterial!=-1)
+		        {
+		          INTERSECTED.object.material = lastObjectMaterial;
+		        }
+
+		        //set lastMaterial
+		        lastObjectMaterial = intersects[j].object.material;
+		        //apply SelMaterial
+		        intersects[j].object.material = selMaterial;
+		        // yu: save intersected object
+		        INTERSECTED = intersects[j];
+
+		        displayAttributes( intersects[j].object.parent.userData );
+		        break;
+		      }
+		      j++;
+		    } // end of while
+		  } else {
+      	$("#model_details_panel_ul").empty();
+      	$("#model_details_panel").panel("close");
+		  }
+		}
+	</script>
+
+	<script>
+		var SCREEN_WIDTH = window.innerWidth;
+		var SCREEN_HEIGHT = window.innerHeight;
+
+		var container, stats;
+		var camera, scene, renderer;
+		var bbox, bboxCenter;
+		var queryString;
+		// Va3c...
+		var lastMeshMaterial, lastMeshID, lastObjectMaterial, lastObjectID;
+		var selMaterial;
+		var targetList = [];
+
+		// Intercect
+		var raycaster;
+		var mouse = new THREE.Vector2(), INTERSECTED;
+		var lastHex;
+
+		init();
+		animate();
+
+		function init() {
+
+			lastMeshMaterial = -1;
+  		lastMeshID = -1;
+  		lastObjectMaterial = -1;
+  		lastObjectID = -1;
+
+			queryString = $.getQueryParameters();
+
+			container = document.createElement( 'div' );
+			$(".ui-content").append( container );
+
+			// SCENE
+
+			scene = new THREE.Scene();
+
+			// CAMERA
+
+			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 15000 );
+		  camera.position.set( 500, 250, 500 );
+
+			// CONTROLS
+
+			controls = new THREE.OrbitControls( camera );
+			// controls.maxPolarAngle = 0.9 * Math.PI / 2;
+			// controls.enableZoom = false;
+
+			// Va3c
+			raycaster = new THREE.Raycaster();
+
+	    // reset btn
+
+	    $("#reset_model_btn").on("click", function(event){
+	    	controls.reset();
+	    });
+
+	    // model detail panel
+
+			$("#model_details_panel").on("panelopen", function(event, ui) {
+					controls.enabled = false;
+				});
+
+			$("#model_details_panel").on("panelclose", function(event, ui) {
+					controls.enabled = true;
+				});
+
+			// RENDERER
+
+			renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true } );
+			// TODO: 背景色
+			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+			container.appendChild( renderer.domElement );
+
+			// load model
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function ( item, loaded, total ) {
+				console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log(Math.round(percentComplete, 2) + "%");
+					$(".ui-loader").html("<h1>模型载入中..." + Math.round(percentComplete, 2) + "%</h1>");
+				}
+			};
+
+			var onError = function ( xhr ) {
+			};
+
+			var loader = new THREE.ObjectLoader(manager);
+
+			// loader.load( 'hotel2.js', function ( object ) {
+			loader.load( 'mesa.js', function ( object ) {
+
+				scene.add(object);
+
+				// a light 
+
+				var ambientLight = new THREE.AmbientLight(0x332222);
+				scene.add(ambientLight);
+
+				bbox = new THREE.Box3().setFromObject(object);
+				bboxCenter = new THREE.Vector3();
+				bboxCenter.subVectors(bbox.max, bbox.min);
+				bboxCenter.multiplyScalar(0.5);
+				bboxCenter.add(bbox.min);
+				bboxCenter.applyMatrix4(object.matrixWorld);
+
+				object.position.y -= bboxCenter.y;
+				object.position.x = 0;
+				object.position.z = 0;
+				// controls.object.target = bboxCenter;
+
+				var depth = 1.3;
+				var objWidthZ = Math.abs(bbox.max.y - bbox.min.y) / 2;
+				var dist = bboxCenter.distanceTo(camera.position) - objWidthZ;
+        var objHeight = Math.abs(bbox.max.y - bbox.min.y);
+
+        var fov = 2 * Math.atan(objHeight * depth / ( 2 * dist )) * ( 180 / Math.PI );
+
+        camera.fov = fov;
+        camera.updateProjectionMatrix();
+
+        // For testing Only
+        // var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
+				// bboxLine.update();
+				// scene.add( bboxLine );
+
+				// 坑：不知道为什么灯光放在摄像定位前面就有问题？
+				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.3);
+        hemiLight.position.copy(bbox.max.multiplyScalar(1.66));
+        hemiLight.name = 'hemiLight';
+        scene.add(hemiLight);
+
+    		var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6 );
+        directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
+        scene.add(directionalLight);
+
+        //call compute function
+    		computeNormalsAndFaces();
+
+  			document.addEventListener( 'dblclick', clickHandler, false );
+  			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+				// jqm loader
+			  $.mobile.loading( "hide" );
+
+			}, onProgress, onError );
+
+			window.addEventListener( 'resize', onWindowResize, false );
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		function animate() {
+			renderer.render( scene, camera );
+			controls.update();
+
+			requestAnimationFrame( animate );
+		}
+	</script>
+
+	<script>
+		function onDocumentMouseMove( event ) {
+			event.preventDefault();
+
+			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		}
+	</script>
+</body>
+</html>

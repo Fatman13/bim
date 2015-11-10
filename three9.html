@@ -171,6 +171,7 @@
 			// loader.load( "888.obj", "888.mtl", function ( object ) {
 			// loader.load( "999.obj", "999.mtl", function ( object ) {
 			loader.load( "zzz.obj", "zzz.mtl", function ( object ) {
+			// loader.load( "gold/0f69d966978a46df96cd1c8a9b05da76.obj", "gold/0f69d966978a46df96cd1c8a9b05da76.mtl", function ( object ) {
 
 				bbox = new THREE.Box3().setFromObject(object);
 				bboxCenter = new THREE.Vector3();
@@ -203,6 +204,7 @@
 			// RENDERER
 
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setClearColor( 0xf0f0f0 );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
 			container.appendChild( renderer.domElement );
