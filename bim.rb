@@ -2,54 +2,54 @@
 require 'sinatra'
 
 get '/' do 
-	send_file 'three12.html'
+	send_file 'src/three12.html'
 end
 
 get '/v10' do 
-	send_file 'three11.html'
+	send_file 'src/three11.html'
 end
 
 get '/v9' do 
-	send_file 'three10.html'
+	send_file 'src/three10.html'
 end
 
 get '/v8' do 
-	send_file 'three9.html'
+	send_file 'src/three9.html'
 end
 
 get '/v8t' do 
-	send_file 'three9t.html'
+	send_file 'src/three9t.html'
 end
 
 get '/v7' do 
-	send_file 'three8.html'
+	send_file 'src/three8.html'
 end
 
 get '/v6' do 
-	send_file 'three7.html'
+	send_file 'src/three7.html'
 end
 
 get '/shtower.asmx/GetSHTowerProduct' do 
 	content_type :json
-	send_file 'model_property.json'
+	send_file 'src/model_property.json'
 end
 
 get '/v5' do 
-	send_file 'three6.html'
+	send_file 'src/three6.html'
 end
 
 get '/v4' do 
-	send_file 'three5.html'
+	send_file 'src/three5.html'
 end
 
 get '/v3' do 
-	send_file 'three4.html'
+	send_file 'src/three4.html'
 end
 
 get '/v2' do 
-	send_file 'three3.html'
+	send_file 'src/three3.html'
 end
 
 get '/v1' do 
-	send_file 'three2.html'
+	send_file 'src/three2.html'
 end
