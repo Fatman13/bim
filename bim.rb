@@ -31,7 +31,7 @@ end
 
 get '/shtower.asmx/GetSHTowerProduct' do 
 	content_type :json
-	send_file 'src/model_property.json'
+	send_file 'model_property.json'
 end
 
 get '/v5' do 

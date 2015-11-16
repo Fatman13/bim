@@ -15,7 +15,7 @@ License参见`LICENSE.txt`。如使用，请在制作人名单中添加作者。
 
 # 更新日志
 
-参见[这里](https://github.com/Fatman13/bim/tree/master/update_log)
+- 参见[这里](https://github.com/Fatman13/bim/tree/master/update_log)
 
 # 已知问题
 
