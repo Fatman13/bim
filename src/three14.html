@@ -231,7 +231,7 @@
 			// CAMERA
 
 			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 15000 );
-		  camera.position.set( 500, 250, 500 );
+		  camera.position.set( 500, 500, 500 );
 
 			// CONTROLS
 
@@ -294,45 +294,37 @@
 				scene.add(object);
 
 				// a light 
-
-				var ambientLight = new THREE.AmbientLight(0x332222);
+				var ambientLight = new THREE.AmbientLight(0xcccccc);
 				scene.add(ambientLight);
 
-				bbox = new THREE.Box3().setFromObject(object);
-				bboxCenter = new THREE.Vector3();
-				bboxCenter.subVectors(bbox.max, bbox.min);
-				bboxCenter.multiplyScalar(0.5);
-				bboxCenter.add(bbox.min);
-				bboxCenter.applyMatrix4(object.matrixWorld);
+				// Nice 
+        bbox = new THREE.BoundingBoxHelper( object, 0xff0000 );
+				bbox.update();
+				// scene.add( bbox );
 
-				object.position.y -= bboxCenter.y;
-				object.position.x = 0;
-				object.position.z = 0;
-				// controls.object.target = bboxCenter;
+				object.position.x -= bbox.position.x;
+				object.position.z -= bbox.position.z;
 
-				var depth = 1.3;
-				var objWidthZ = Math.abs(bbox.max.y - bbox.min.y) / 2;
-				var dist = bboxCenter.distanceTo(camera.position) - objWidthZ;
-        var objHeight = Math.abs(bbox.max.y - bbox.min.y);
+    		// new bbox ver
+        var depth = 1.3;
+				var objWidthZ = Math.abs(bbox.box.max.y - bbox.box.min.y) / 2;
+				var dist = bbox.position.distanceTo(camera.position) - objWidthZ;
+        var objHeight = Math.abs(bbox.box.max.y - bbox.box.min.y);
 
         var fov = 2 * Math.atan(objHeight * depth / ( 2 * dist )) * ( 180 / Math.PI );
 
         camera.fov = fov;
         camera.updateProjectionMatrix();
 
-        // For testing Only
-        // var bboxLine = new THREE.BoundingBoxHelper( object, 0xff0000 );
-				// bboxLine.update();
-				// scene.add( bboxLine );
-
 				// 坑：不知道为什么灯光放在摄像定位前面就有问题？
-				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.3);
-        hemiLight.position.copy(bbox.max.multiplyScalar(1.66));
+				var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
         hemiLight.name = 'hemiLight';
+        hemiLight.position.copy(new THREE.Vector3(0, bbox.position.y + 500, 0));
         scene.add(hemiLight);
 
-    		var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6 );
-        directionalLight.position.copy(new THREE.Vector3(1500, 1500, 1500));
+    		var directionalLight = new THREE.DirectionalLight(0xffffff, 0.2 );
+        // directionalLight.position.copy(new THREE.Vector3(500, 500, 500));
+        directionalLight.position.copy(bbox.box.max.multiplyScalar(3));
         scene.add(directionalLight);
 
         //call compute function
