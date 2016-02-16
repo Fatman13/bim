@@ -1,3 +1,8 @@
+### 0.0.16
+
+- 利用asiasw的room to mass插件，生成revit定义的房间的透明彩色空间体
+- demo演示使用的是hotel_gai.js这个模型
+
 ### 0.0.15
 
 - 进一步优化灯光效果
