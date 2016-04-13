@@ -1,3 +1,9 @@
+### 0.0.17
+
+- 增加了截图功能
+- 可能会有性能上的[拖累](https://github.com/mrdoob/three.js/pull/421#issuecomment-1792008)
+- copy&paste了OS的[代码](http://stackoverflow.com/questions/26193702/three-js-how-can-i-make-a-2d-snapshot-of-a-scene-as-a-jpg-image)
+
 ### 0.0.16
 
 - 利用asiasw的room to mass插件，生成revit定义的房间的透明彩色空间体

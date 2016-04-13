@@ -1,8 +1,13 @@
 # encoding: utf-8
 require 'sinatra'
 
-# 12的改进版
+# 截图demo
 get '/' do 
+	send_file 'src/three15.html'
+end
+
+# 12的改进版
+get '/v13' do 
 	send_file 'src/three14.html'
 end
 
